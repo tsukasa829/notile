@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NextQuest - 目標達成支援プラットフォーム
 
-## Getting Started
+AIとコミュニティの力で、人生をゲームのように攻略する学習プラットフォーム。
 
-First, run the development server:
+## 🚀 Getting Started
+
+### 1. Supabaseプロジェクト作成
+
+1. [Supabase](https://app.supabase.com)でアカウント作成
+2. 新規プロジェクト作成
+3. Project Settings > API から以下を取得:
+   - `Project URL`
+   - `anon public` key
+
+### 2. 環境変数設定
+
+`.env.local`ファイルを作成（`.env.local.example`を参考）:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+```
+
+### 3. データベース初期化
+
+Supabaseダッシュボード > SQL Editor で以下を実行:
+
+```bash
+# supabase/migrations/001_initial_schema.sql の内容をコピー&ペースト
+```
+
+### 4. 開発サーバー起動
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+http://localhost:3000 で確認
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 プロジェクト構造
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+notile/
+├── app/                  # Next.js App Router
+│   ├── layout.tsx       # ルートレイアウト（ナビゲーション）
+│   └── page.tsx         # トップページ
+├── lib/
+│   └── supabase.ts      # Supabaseクライアント
+├── supabase/
+│   └── migrations/      # SQLマイグレーション
+├── docs/
+│   └── plan.md          # プロジェクト企画書
+└── .env.local.example   # 環境変数テンプレート
+```
 
-## Learn More
+## 🎨 デザインシステム
 
-To learn more about Next.js, take a look at the following resources:
+### カラーパレット（Tailwind）
+- `primary-*`: 青グラデーション（#1E3A8A → #3B82F6 → #60A5FA）
+- `bg-blue-gradient`: 135度グラデーション
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 主要コンポーネント
+- グラスモーフィズム: `bg-primary-800/30 backdrop-blur-sm border border-primary-700/50`
+- ボタン: `bg-blue-gradient hover:opacity-90`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📊 データモデル
 
-## Deploy on Vercel
+- **users**: ユーザー情報、レベル、XP、連続日数
+- **programs**: 学習プログラム（公開/非公開）
+- **steps**: プログラムのタスク
+- **enrollments**: ユーザーのプログラム受講状況
+- **progress**: タスク完了状態
+- **badges**: バッジマスタ
+- **user_badges**: 獲得バッジ
+- **certificates**: 認定証（有料）
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔐 認証
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Supabase Authを使用:
+- メールログイン
+- OAuth（Google/GitHub等）
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Database**: Supabase (PostgreSQL)
+- **Auth**: Supabase Auth
+- **Styling**: Tailwind CSS
+- **TypeScript**: Full type safety
+
+## 📝 Next Steps
+
+- [ ] Supabase Authログイン実装
+- [ ] プログラム作成フォーム（LLM生成）
+- [ ] ダッシュボード（進捗可視化）
+- [ ] コミュニティチャット
+- [ ] バッジシステム
+- [ ] 認定証発行（Stripe決済）
+
+## 📖 詳細ドキュメント
+
+プロジェクト企画の全体像は `docs/plan.md` を参照してください。
