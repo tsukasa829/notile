@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { enrollments } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUserFromRequest } from '@/lib/auth';
 
 // コースに受講登録
 export async function POST(
@@ -11,7 +11,7 @@ export async function POST(
 ) {
   try {
     const { id: programId } = await params;
-    const user = await getCurrentUser();
+    const user = await getCurrentUserFromRequest(request);
 
     if (!user) {
       return NextResponse.json(

@@ -16,15 +16,15 @@ console.log('🔍 DB Config:', {
 
 // 環境に応じてDB接続を切り替え
 let db: ReturnType<typeof drizzlePglite> | ReturnType<typeof drizzlePostgres>;
-let pgliteClient: PGlite | null = null;
+let pgliteClientInstance: PGlite | null = null;
 // postgres-js raw client (Supabase接続時のみ設定)
 export let rawClient: ReturnType<typeof postgres> | null = null;
 
 if (isDevelopment && !databaseUrl) {
   // ローカル開発: PGLite
   console.log('🔵 Using PGLite (local development)');
-  pgliteClient = new PGlite('./local.db');
-  db = drizzlePglite(pgliteClient, { schema });
+  pgliteClientInstance = new PGlite('./local.db');
+  db = drizzlePglite(pgliteClientInstance, { schema });
 } else if (databaseUrl) {
   // 本番またはDATABASE_URL指定時: Supabase PostgreSQL
   console.log('🟢 Using Supabase PostgreSQL (production)');
@@ -61,17 +61,15 @@ if (isDevelopment && !databaseUrl) {
   throw new Error('Database configuration error: Set DATABASE_URL for production');
 }
 
-export { db };
-
 // Initialize DB (PGLiteの場合のみ必要)
 export async function initializeDB() {
-  if (!pgliteClient) {
+  if (!pgliteClientInstance) {
     console.log('ℹ️ Using remote PostgreSQL, skipping local initialization');
     return;
   }
 
   try {
-    await pgliteClient.exec(`
+    await pgliteClientInstance.exec(`
       CREATE TABLE IF NOT EXISTS users (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         display_name TEXT,
@@ -87,3 +85,5 @@ export async function initializeDB() {
     console.error('❌ Database initialization failed:', error);
   }
 }
+
+export { db, pgliteClientInstance as pgliteClient };

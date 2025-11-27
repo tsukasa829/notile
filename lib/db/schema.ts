@@ -52,6 +52,38 @@ export const progress = pgTable('progress', {
   completedAt: timestamp('completed_at'),
 });
 
+// 修了証書
+export const certificates = pgTable('certificates', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id).notNull(),
+  programId: uuid('program_id').references(() => programs.id).notNull(),
+  enrollmentId: uuid('enrollment_id').references(() => enrollments.id).notNull(),
+  certificateNumber: text('certificate_number').notNull().unique(), // 証書番号
+  issuedAt: timestamp('issued_at').defaultNow().notNull(),
+  completionDate: timestamp('completion_date').notNull(), // 修了日
+});
+
+// バッジ定義
+export const badgeRarityEnum = pgEnum('badge_rarity', ['common', 'rare', 'epic', 'legendary']);
+
+export const badges = pgTable('badges', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  description: text('description'),
+  iconUrl: text('icon_url'),
+  rarity: badgeRarityEnum('rarity').notNull().default('common'),
+  programId: uuid('program_id').references(() => programs.id), // コース完了バッジの場合
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// ユーザー獲得バッジ
+export const userBadges = pgTable('user_badges', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id).notNull(),
+  badgeId: uuid('badge_id').references(() => badges.id).notNull(),
+  earnedAt: timestamp('earned_at').defaultNow().notNull(),
+});
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Program = typeof programs.$inferSelect;
@@ -62,3 +94,9 @@ export type Enrollment = typeof enrollments.$inferSelect;
 export type NewEnrollment = typeof enrollments.$inferInsert;
 export type Progress = typeof progress.$inferSelect;
 export type NewProgress = typeof progress.$inferInsert;
+export type Certificate = typeof certificates.$inferSelect;
+export type NewCertificate = typeof certificates.$inferInsert;
+export type Badge = typeof badges.$inferSelect;
+export type NewBadge = typeof badges.$inferInsert;
+export type UserBadge = typeof userBadges.$inferSelect;
+export type NewUserBadge = typeof userBadges.$inferInsert;

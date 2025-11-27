@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { steps, enrollments, progress, users, programs } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUserFromRequest } from '@/lib/auth';
 
 // コーチからの褒めメッセージリスト
 const COACH_MESSAGES = [
@@ -23,7 +23,7 @@ export async function POST(
 ) {
   try {
     const { id: courseId, missionId } = await params;
-    const user = await getCurrentUser();
+    const user = await getCurrentUserFromRequest(request);
 
     if (!user) {
       return NextResponse.json(

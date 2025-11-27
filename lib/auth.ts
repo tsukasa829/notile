@@ -70,3 +70,30 @@ export async function getCurrentUser() {
 
   return user || null;
 }
+
+// URLパラメータからテスト用ユーザーIDを取得（開発環境のみ）
+export async function getCurrentUserFromRequest(request: Request) {
+  // 開発環境のみURLパラメータを許可
+  if (process.env.NODE_ENV === 'development' || process.env.ALLOW_TEST_USER === 'true') {
+    const url = new URL(request.url);
+    const testUserId = url.searchParams.get('userId') || url.searchParams.get('user_id');
+    
+    if (testUserId) {
+      const { db } = await import('@/lib/db');
+      const { users } = await import('@/lib/db/schema');
+      const { eq } = await import('drizzle-orm');
+
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, testUserId))
+        .limit(1);
+
+      return user || null;
+    }
+  }
+
+  // 通常のセッションベース認証
+  return getCurrentUser();
+}
+
