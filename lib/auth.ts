@@ -52,3 +52,21 @@ export async function deleteSession() {
   const cookieStore = await cookies();
   cookieStore.delete(COOKIE_NAME);
 }
+
+// DBからユーザー情報を取得
+export async function getCurrentUser() {
+  const session = await getSession();
+  if (!session) return null;
+
+  const { db } = await import('@/lib/db');
+  const { users } = await import('@/lib/db/schema');
+  const { eq } = await import('drizzle-orm');
+
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, session.userId))
+    .limit(1);
+
+  return user || null;
+}
